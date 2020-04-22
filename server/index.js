@@ -56,21 +56,37 @@ const schema = buildSchema(`
     findAllPokemonOfOneType(name: String): [Pokemon]
     findPokemonWithSpecificAttack(name: String): [Pokemon]
   }
-`);
-/*
-  type FastOrSpecialAttacks{
-   types: [FastSpecialAttacks]
+  input AddNewPokemon{
+    id: String
+    name: String
   }
-   type AllTypes {
-    types: [String]
-   }
+  type Mutations {
+    addNewPokemon(input: AddNewPokemon): Pokemon
+  }
+`);
 
-*/
 /*
- 
-    Attacks(type: String, name: String): Attacks
-    FastOrSpecialAttacks(type: String)
-    Types: [String]
+  input addNewFast {
+    name: String
+    type: String
+    damage: String
+  }
+  input addNewSpecial {
+    name: String
+    type: String
+    damage: String
+  }
+  input newAttacks {
+    fast: [addNewFast]
+    special: [addNewSpecial]
+  }
+
+  input AddNewPokemon{
+    id: String
+    name: String
+    type: [String]
+    attacks: newAttacks
+  }
 
 */
 
@@ -121,6 +137,10 @@ const root = {
       }
     });
     return result;
+  },
+  addNewPokemon: (request) => {
+    data.pokemon.push(request);
+    return data.pokemon.length - 1;
   },
 };
 // Start your express server!
@@ -239,11 +259,41 @@ app.listen(PORT, () => {
 // #
 // }
 
+// # query {
+// #   findAllPokemonOfOneType(name: "Dragon") {
+// #     name
+// #     id
+// #
+//   }
+// #
+// }
+
 // query {
-//   findAllPokemonOfOneType(name: "Dragon") {
-//     Pokemon {
-//       name
+//   findPokemonWithSpecificAttack(name: "Solar Beam") {
+//     name
+//     id
+//   }
+// }
+
+// mutation {
+//   input addNewPokemon(id: "333", name: "HaleeAizhan") {
+//     Pokemons {
 //       id
+//       name
 //     }
 //   }
+// }
+
+// # mutation {
+// #   addNewPokemon(input: {
+//   id: "333", name: "HaleeAizhan", type: ["Grass", "Fire"], attacks: { fast: [{ name: "fast_att", type: "fire_type", damage: "60" }], special: [{ name: "special_att", type: "grass_type", damage: "50" }] }
+// #   }) {
+// #  Pokemons {
+// #     id
+// #     name
+// #
+//     }
+// #
+//   }
+// #
 // }
