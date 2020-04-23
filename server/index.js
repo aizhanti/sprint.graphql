@@ -60,7 +60,7 @@ const schema = buildSchema(`
     id: String
     name: String
   }
-  type Mutations {
+  type Mutation {
     addNewPokemon(input: AddNewPokemon): Pokemon
   }
 `);
@@ -106,7 +106,6 @@ const root = {
     return data.attacks;
   },
   allTypes: () => {
-    console.log(data.types);
     return data.types;
   },
   eitherFastOrSpecialAttacks: (request) => {
@@ -139,13 +138,18 @@ const root = {
     return result;
   },
   addNewPokemon: (request) => {
-    data.pokemon.push(request);
-    return data.pokemon.length - 1;
+    data.pokemon.push(request.input);
+    return data.pokemon[data.pokemon.length - 1];
+  },
+  editPokemon: (request) => {
+    // do something here to edit pokemon information
+    console.log("this is editPokemon request.input.id: ", request.input.id);
+    return request;
   },
 };
 // Start your express server!
 const app = express();
-
+ß;
 /*
   The only endpoint for your server is `/graphql`- if you are fetching a resource, 
   you will need to POST your query to that endpoint. Suggestion: check out Apollo-Fetch
