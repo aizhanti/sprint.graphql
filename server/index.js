@@ -56,16 +56,6 @@ const schema = buildSchema(`
     findAllPokemonOfOneType(name: String): [Pokemon]
     findPokemonWithSpecificAttack(name: String): [Pokemon]
   }
-  input AddNewPokemon{
-    id: String
-    name: String
-  }
-  type Mutation {
-    addNewPokemon(input: AddNewPokemon): Pokemon
-  }
-`);
-
-/*
   input addNewFast {
     name: String
     type: String
@@ -80,15 +70,22 @@ const schema = buildSchema(`
     fast: [addNewFast]
     special: [addNewSpecial]
   }
-
   input AddNewPokemon{
     id: String
     name: String
-    type: [String]
+    types: [String]
     attacks: newAttacks
   }
-
-*/
+  input editPokemon {
+    id: String
+    name: String
+  }
+  type Mutation {
+    addNewPokemon(input: AddNewPokemon): Pokemon
+    editPokemon(input: editPokemon): Pokemon
+    deletePokemon(input: editPokemon): Int
+  }
+`);
 
 // The root provides the resolver functions for each type of query or mutation.
 const root = {
@@ -143,13 +140,32 @@ const root = {
   },
   editPokemon: (request) => {
     // do something here to edit pokemon information
-    console.log("this is editPokemon request.input.id: ", request.input.id);
-    return request;
+    return data.pokemon.find((pokemon) => {
+      if (
+        pokemon.id === request.input.id ||
+        pokemon.name === request.input.name
+      ) {
+        pokemon = Object.assign(pokemon, request.input);
+        return pokemon;
+      }
+    });
+  },
+  deletePokemon: (request) => {
+    console.log("data.pokemon.length", data.pokemon.length);
+    for (let i = 0; i < data.pokemon.length; i++) {
+      if (
+        data.pokemon[i].id === request.input.id ||
+        data.pokemon[i].name === request.input.name
+      ) {
+        data.pokemon.splice(i, 1);
+        return data.pokemon.length;
+      }
+    }
   },
 };
 // Start your express server!
 const app = express();
-ß;
+
 /*
   The only endpoint for your server is `/graphql`- if you are fetching a resource, 
   you will need to POST your query to that endpoint. Suggestion: check out Apollo-Fetch
@@ -300,4 +316,17 @@ app.listen(PORT, () => {
 // #
 //   }
 // #
+// }
+// mutation {
+//   addNewPokemon(input: { id: "333", name: "HaleeAizhan", types: ["Grass", "Fire"] }) {
+//     id
+//     name
+//     types
+//   }
+// }
+// mutation {
+//   editPokemon(input: { id: "001", name: "AizhanHalee" }) {
+//     id
+//     name
+//   }
 // }
